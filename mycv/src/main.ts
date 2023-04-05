@@ -1,22 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
-import * as session from 'express-session';
+import { setupApp } from './setup-app';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(
-    session({
-      secret: 'process.env.secret',
-      resave: false,
-      saveUninitialized: false,
-    }),
-  );
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true, // ignores extra properties from body
-    }),
-  );
+  // use both in setup-app, the 'correct' way according to documentation is set in app module
+  setupApp(app);
   await app.listen(3000);
 }
 bootstrap();
