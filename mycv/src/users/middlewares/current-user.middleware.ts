@@ -3,6 +3,10 @@ import { UsersService } from '../users.service';
 import { NextFunction, Request, Response } from 'express';
 import { User } from '../user.entity';
 
+type ReqType = {
+  currentUser?: User;
+} & Request;
+
 declare global {
   namespace Express {
     interface Request {
@@ -21,7 +25,7 @@ declare module 'express-session' {
 export class CurrentUserMiddleware implements NestMiddleware {
   constructor(private usersService: UsersService) {}
 
-  async use(req: Request, res: Response, next: NextFunction) {
+  async use(req: ReqType, res: Response, next: NextFunction) {
     const { userId } = req.session || {};
 
     if (userId) {

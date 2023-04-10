@@ -4,11 +4,10 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ReportsModule } from './reports/reports.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/user.entity';
-import { Report } from './reports/report.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as session from 'express-session';
 import { APP_PIPE } from '@nestjs/core';
+import { TypeormConfigService } from './config/typeorm.config';
 
 @Module({
   imports: [
@@ -17,17 +16,8 @@ import { APP_PIPE } from '@nestjs/core';
       envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
     TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        return {
-          type: 'sqlite',
-          database: config.get<string>('DB_NAME'),
-          synchronize: true,
-          entities: [User, Report],
-        };
-      },
+      useClass: TypeormConfigService,
     }),
-
     UsersModule,
     ReportsModule,
   ],
